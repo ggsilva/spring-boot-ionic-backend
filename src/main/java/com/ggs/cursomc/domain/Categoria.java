@@ -1,12 +1,22 @@
 package com.ggs.cursomc.domain;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.io.Serializable;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class Categoria implements Serializable{
 
 	private static final long serialVersionUID = 2377321497520928060L;
 	
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
 	public Integer id;
+	
 	public String nome;
 	
 	public Integer getId() {
