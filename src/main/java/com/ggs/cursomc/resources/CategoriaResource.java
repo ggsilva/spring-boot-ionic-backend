@@ -14,10 +14,10 @@ import com.ggs.cursomc.services.CategoriaService;
 @RestController
 @RequestMapping(value = "/categorias")
 public class CategoriaResource {
-	
+
 	@Autowired
 	private CategoriaService service;
-	
+
 	@RequestMapping(method = GET, value = "/{id}")
 	public ResponseEntity<?> find(@PathVariable Integer id) {
 		return ok(service.buscar(id));
