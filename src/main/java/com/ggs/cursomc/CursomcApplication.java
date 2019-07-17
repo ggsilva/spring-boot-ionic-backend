@@ -8,7 +8,9 @@ import static java.util.Arrays.asList;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -20,6 +22,7 @@ import com.ggs.cursomc.domain.Cidade;
 import com.ggs.cursomc.domain.Cliente;
 import com.ggs.cursomc.domain.Endereco;
 import com.ggs.cursomc.domain.Estado;
+import com.ggs.cursomc.domain.ItemPedido;
 import com.ggs.cursomc.domain.Pagamento;
 import com.ggs.cursomc.domain.PagamentoComBoleto;
 import com.ggs.cursomc.domain.PagamentoComCartao;
@@ -32,6 +35,7 @@ import com.ggs.cursomc.repositories.CidadeRepository;
 import com.ggs.cursomc.repositories.ClienteRepository;
 import com.ggs.cursomc.repositories.EnderecoRepository;
 import com.ggs.cursomc.repositories.EstadoRepository;
+import com.ggs.cursomc.repositories.ItemPedidoRepository;
 import com.ggs.cursomc.repositories.PagamentoRepository;
 import com.ggs.cursomc.repositories.PedidoRepository;
 import com.ggs.cursomc.repositories.ProdutoRepository;
@@ -47,6 +51,7 @@ public class CursomcApplication implements CommandLineRunner {
 	@Autowired private EnderecoRepository enderecoRepo;
 	@Autowired private CategoriaRepository categoriaRepo;
 	@Autowired private PagamentoRepository pagamentoRepo;
+	@Autowired private ItemPedidoRepository itemPedidoRepo;
 
 	public static void main(String[] args) {
 		SpringApplication.run(CursomcApplication.class, args);
@@ -191,6 +196,23 @@ public class CursomcApplication implements CommandLineRunner {
 		
 		pedidoRepo.save(asList(p1, p2));
 		pagamentoRepo.save(asList(pCC, pCB));
+		
+		Produto pr1 = produtoRepo.getOne(1);
+		Produto pr2 = produtoRepo.getOne(2);
+		Produto pr3 = produtoRepo.getOne(3);
+		
+		ItemPedido i1 = newItemPedido(p1, pr1, 2000.0, 1, 0.0);
+		ItemPedido i2 = newItemPedido(p1, pr3, 80.0, 2, 0.0);
+		ItemPedido i3 = newItemPedido(p2, pr2, 800.0, 1, 100.0);
+		
+		p1.getItens().addAll(asList(i1, i2));
+		p2.getItens().addAll(asList(i3));
+		
+		pr1.setItens(newSetItens(asList(i1)));
+		pr2.setItens(newSetItens(asList(i3)));
+		pr3.setItens(newSetItens(asList(i1)));
+		
+		itemPedidoRepo.save(asList(i1, i2, i3));
 	}
 
 	private static Pedido newPedido(Cliente cliente, Endereco endereco, String date) { 
@@ -230,6 +252,22 @@ public class CursomcApplication implements CommandLineRunner {
 		p.setPedido(pedido);
 		p.setEstado(estado);
 		return p;
+	}
+
+	private static ItemPedido newItemPedido(Pedido pedido, Produto produto, Double preco, Integer quantidade, Double desconto) {
+		ItemPedido i = new ItemPedido();
+		i.setPedido(pedido);
+		i.setProduto(produto);
+		i.setPreco(preco);
+		i.setQuantidade(quantidade);
+		i.setDesconto(desconto);
+		return i;
+	}	
+	
+	private static Set<ItemPedido> newSetItens(List<ItemPedido> itens) {
+		Set<ItemPedido> prds = new HashSet<ItemPedido>();
+		prds.addAll(itens);
+		return prds;
 	}
 
 }

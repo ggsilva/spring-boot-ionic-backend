@@ -1,10 +1,13 @@
 package com.ggs.cursomc.domain;
 
+import static java.util.Arrays.asList;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,20 +15,20 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 public class Produto implements Serializable {
 
-	private static final long serialVersionUID = 7485542087614985557L;
-
+	private static final long serialVersionUID = -4478220196392119453L;
+	
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	private Integer id;
 	private String nome;
 	private Double preco;
-	//private Categoria categoria;
 	
 	@ManyToMany
 	@JsonBackReference
@@ -34,6 +37,9 @@ public class Produto implements Serializable {
 			joinColumns = @JoinColumn(name = "produto_id"),
 			inverseJoinColumns = @JoinColumn(name = "categoria_id"))
 	private List<Categoria> categorias = new ArrayList<Categoria>();
+
+	@OneToMany(mappedBy = "id.produto")
+	private Set<ItemPedido> itens = new HashSet<ItemPedido>();
 
 	public Integer getId() {
 		return id;
@@ -59,20 +65,29 @@ public class Produto implements Serializable {
 		this.preco = preco;
 	}
 
-//	public Categoria getCategoria() {
-//		return categoria;
-//	}
-//
-//	public void setCategoria(Categoria categoria) {
-//		this.categoria = categoria;
-//	}
-
 	public List<Categoria> getCategorias() {
 		return categorias;
 	}
 
 	public void setCategorias(List<Categoria> categorias) {
 		this.categorias = categorias;
+	}
+
+	public Set<ItemPedido> getItens() {
+		return itens;
+	}
+
+	public void setItens(Set<ItemPedido> itens) {
+		this.itens = itens;
+	}
+	
+	public List<Pedido> getPedidos() {
+		List<Pedido> pedidos = asList();
+		
+		for (ItemPedido item : getItens())
+			pedidos.add(item.getPedido());
+		
+		return pedidos;
 	}
 
 	@Override
