@@ -1,8 +1,13 @@
 package com.ggs.cursomc;
 
+import static com.ggs.cursomc.domain.enums.EstadoPagamento.PENDENTE;
+import static com.ggs.cursomc.domain.enums.EstadoPagamento.QUITADO;
 import static com.ggs.cursomc.domain.enums.TipoCliente.PESSOA_FISICA;
 import static java.util.Arrays.asList;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,24 +20,33 @@ import com.ggs.cursomc.domain.Cidade;
 import com.ggs.cursomc.domain.Cliente;
 import com.ggs.cursomc.domain.Endereco;
 import com.ggs.cursomc.domain.Estado;
+import com.ggs.cursomc.domain.Pagamento;
+import com.ggs.cursomc.domain.PagamentoComBoleto;
+import com.ggs.cursomc.domain.PagamentoComCartao;
+import com.ggs.cursomc.domain.Pedido;
 import com.ggs.cursomc.domain.Produto;
+import com.ggs.cursomc.domain.enums.EstadoPagamento;
 import com.ggs.cursomc.domain.enums.TipoCliente;
 import com.ggs.cursomc.repositories.CategoriaRepository;
 import com.ggs.cursomc.repositories.CidadeRepository;
 import com.ggs.cursomc.repositories.ClienteRepository;
 import com.ggs.cursomc.repositories.EnderecoRepository;
 import com.ggs.cursomc.repositories.EstadoRepository;
+import com.ggs.cursomc.repositories.PagamentoRepository;
+import com.ggs.cursomc.repositories.PedidoRepository;
 import com.ggs.cursomc.repositories.ProdutoRepository;
 
 @SpringBootApplication
 public class CursomcApplication implements CommandLineRunner {
-	
+
 	@Autowired private CidadeRepository cidadeRepo;
 	@Autowired private EstadoRepository estadoRepo;
+	@Autowired private PedidoRepository pedidoRepo;
 	@Autowired private ClienteRepository clienteRepo;
 	@Autowired private ProdutoRepository produtoRepo;
 	@Autowired private EnderecoRepository enderecoRepo;
 	@Autowired private CategoriaRepository categoriaRepo;
+	@Autowired private PagamentoRepository pagamentoRepo;
 
 	public static void main(String[] args) {
 		SpringApplication.run(CursomcApplication.class, args);
@@ -43,6 +57,7 @@ public class CursomcApplication implements CommandLineRunner {
 		createCategorias();
 		createEstados();
 		createPessoas();
+		createPedidos();
 	}
 
 	private void createCategorias() {
@@ -157,6 +172,64 @@ public class CursomcApplication implements CommandLineRunner {
 		c.setTipo(tipo);
 		c.getTelefones().addAll(telefones);
 		return c;
+	}
+
+	private void createPedidos() {
+		Cliente c1 = clienteRepo.findOne(1);
+		Endereco e1 = enderecoRepo.findOne(1);
+		Endereco e2 = enderecoRepo.findOne(2);
+		
+		Pedido p1 = newPedido(c1, e1, "29/10/2012 19:35");
+		Pagamento pCC = newPagamentoCC(p1, QUITADO, 6);
+		p1.setPagamento(pCC);
+		
+		Pedido p2 = newPedido(c1, e2, "11/07/2015 20:25");
+		Pagamento pCB = newPagamentoCB(p2, PENDENTE, "17/07/2015 20:00", null);
+		p2.setPagamento(pCB);
+		
+		c1.setPedidos(asList(p1, p2));
+		
+		pedidoRepo.save(asList(p1, p2));
+		pagamentoRepo.save(asList(pCC, pCB));
+	}
+
+	private static Pedido newPedido(Cliente cliente, Endereco endereco, String date) { 
+		Pedido p = new Pedido();
+		p.setCliente(cliente);
+		p.setEnderecoDeEntrega(endereco);
+		p.setInstante(newDate(date));
+		return p;
+	}
+
+	private static Date newDate(String date) {
+		if(date == null)
+			return null;
+		
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+			return sdf.parse(date);
+		} catch (ParseException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+	
+	private static Pagamento newPagamentoCC(Pedido pedido, EstadoPagamento estado, Integer numeroDeParcelas) {
+		PagamentoComCartao p = new PagamentoComCartao();
+		p.setNumeroDeParcelas(numeroDeParcelas);
+		return setPagamento(p, pedido, estado);
+	}
+	
+	private static Pagamento newPagamentoCB(Pedido pedido, EstadoPagamento estado, String dataVencimento, String dataPagamento) {
+		PagamentoComBoleto p = new PagamentoComBoleto();
+		p.setDataPagamento(newDate(dataPagamento));
+		p.setDataPagamento(newDate(dataVencimento));
+		return setPagamento(p, pedido, estado);
+	}
+
+	private static Pagamento setPagamento(Pagamento p, Pedido pedido, EstadoPagamento estado) {
+		p.setPedido(pedido);
+		p.setEstado(estado);
+		return p;
 	}
 
 }
