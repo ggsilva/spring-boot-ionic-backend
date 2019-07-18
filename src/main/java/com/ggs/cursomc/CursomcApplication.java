@@ -197,9 +197,9 @@ public class CursomcApplication implements CommandLineRunner {
 		pedidoRepo.save(asList(p1, p2));
 		pagamentoRepo.save(asList(pCC, pCB));
 		
-		Produto pr1 = produtoRepo.getOne(1);
-		Produto pr2 = produtoRepo.getOne(2);
-		Produto pr3 = produtoRepo.getOne(3);
+		Produto pr1 = produtoRepo.findOne(1);
+		Produto pr2 = produtoRepo.findOne(2);
+		Produto pr3 = produtoRepo.findOne(3);
 		
 		ItemPedido i1 = newItemPedido(p1, pr1, 2000.0, 1, 0.0);
 		ItemPedido i2 = newItemPedido(p1, pr3, 80.0, 2, 0.0);
@@ -208,9 +208,9 @@ public class CursomcApplication implements CommandLineRunner {
 		p1.getItens().addAll(asList(i1, i2));
 		p2.getItens().addAll(asList(i3));
 		
-		pr1.setItens(newSetItens(asList(i1)));
-		pr2.setItens(newSetItens(asList(i3)));
-		pr3.setItens(newSetItens(asList(i1)));
+		pr1.setItens(newSet(asList(i1)));
+		pr2.setItens(newSet(asList(i3)));
+		pr3.setItens(newSet(asList(i1)));
 		
 		itemPedidoRepo.save(asList(i1, i2, i3));
 	}
@@ -264,8 +264,8 @@ public class CursomcApplication implements CommandLineRunner {
 		return i;
 	}	
 	
-	private static Set<ItemPedido> newSetItens(List<ItemPedido> itens) {
-		Set<ItemPedido> prds = new HashSet<ItemPedido>();
+	private static <T> Set<T> newSet(List<T> itens) {
+		Set<T> prds = new HashSet<T>();
 		prds.addAll(itens);
 		return prds;
 	}
