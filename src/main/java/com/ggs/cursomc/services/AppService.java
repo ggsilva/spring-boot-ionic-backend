@@ -3,6 +3,7 @@ package com.ggs.cursomc.services;
 import static java.lang.String.format;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -48,6 +49,10 @@ public abstract class AppService<T extends AppEntity> {
 		}catch (DataIntegrityViolationException e) {
 			throw new DataIntegrityException(format("Não é possível excluir %s que possua dependências", classEntity().getSimpleName()));
 		}
+	}
+	
+	public List<T> findAll(){
+		return repository().findAll();
 	}
 
 }
