@@ -41,16 +41,19 @@ public abstract class AppService<T extends AppEntity> {
 	}
 
 	public T update(T c) {
-		find(c.getId());
-		return repository().save(c);
+		T obj = find(c.getId());
+		updateData(obj, c);
+		return repository().save(obj);
 	}
 	
+	protected void updateData(T oldObj, T newObj) {};
+
 	public void delete(Integer id) {
 		find(id);
 		try {
 			repository().delete(id);
 		}catch (DataIntegrityViolationException e) {
-			throw new DataIntegrityException(format("Não é possível excluir %s que possua dependências", classEntity().getSimpleName()));
+			throw new DataIntegrityException(format("Não é possível excluir %s que possua associações", classEntity().getSimpleName()));
 		}
 	}
 	
