@@ -16,9 +16,15 @@ public class CategoriaService extends AppService<Categoria> {
 	protected CategoriaRepository repository() {
 		return repository;
 	}
+	
+	@Override
+	protected void updateData(Categoria actualObj, Categoria newObj) {
+		actualObj.setNome(newObj.getNome());
+	}
 
 	public Categoria fromDTO(CategoriaDTO c) {
 		Categoria categoria = new Categoria();
+		categoria.setId(c.getId());
 		categoria.setNome(c.getNome());
 		return categoria;
 	}
