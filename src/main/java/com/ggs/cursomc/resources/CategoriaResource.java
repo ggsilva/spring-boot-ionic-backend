@@ -13,6 +13,8 @@ import static org.springframework.web.servlet.support.ServletUriComponentsBuilde
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -38,19 +40,21 @@ public class CategoriaResource {
 	}
 
 	@RequestMapping(method = POST)
-	public ResponseEntity<Void> insert(@RequestBody Categoria c) {
-		c = service.insert(c);
-		return created(newUri(c)).build();
+	public ResponseEntity<Void> insert(@Valid @RequestBody CategoriaDTO c) {
+		Categoria cat = service.fromDTO(c);
+		cat = service.insert(cat);
+		return created(newUri(newDto(cat))).build();
 	}
 
-	private static URI newUri(Categoria c) {
+	private static URI newUri(CategoriaDTO c) {
 		return fromCurrentRequest().path("/{id}").buildAndExpand(c.getId()).toUri();
 	}
 
 	@RequestMapping(method = PUT, value = "/{id}")
-	public ResponseEntity<Void> update(@RequestBody Categoria c, @PathVariable Integer id) {
-		c.setId(id);
-		c = service.update(c);
+	public ResponseEntity<Void> update(@Valid @RequestBody CategoriaDTO c, @PathVariable Integer id) {
+		Categoria cat = service.fromDTO(c);
+		cat.setId(id);
+		cat = service.update(cat);
 		return noContent().build();
 	}
 	
