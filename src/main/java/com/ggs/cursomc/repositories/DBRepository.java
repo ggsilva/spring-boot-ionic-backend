@@ -39,12 +39,12 @@ public class DBRepository {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private static <T> JpaRepository<T, Integer> repository(T obj) {
+	public static <T> JpaRepository<T, Integer> repository(T obj) {
 		return repository((Class<T>) obj.getClass());
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T> JpaRepository<T, Integer> repository(Class<T> entityClass) {
+	public static <T> JpaRepository<T, Integer> repository(Class<T> entityClass) {
 		JpaRepository<?, Integer> repo = repositories().get(entityClass);
 		
 		if(isNeedVerifySuperClass(entityClass, repo))

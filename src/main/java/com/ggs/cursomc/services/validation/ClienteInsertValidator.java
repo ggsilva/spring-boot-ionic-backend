@@ -9,11 +9,16 @@ import java.util.List;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.ggs.cursomc.dto.ClienteNewDTO;
+import com.ggs.cursomc.repositories.ClienteRepository;
 import com.ggs.cursomc.resources.exception.FieldMessage;
 import com.ggs.cursomc.services.validation.utils.BR;
 
 public class ClienteInsertValidator implements ConstraintValidator<ClienteInsert, ClienteNewDTO> {
+	
+	@Autowired ClienteRepository clienteRepository;
 
 	private List<FieldMessage> list;
 	private ConstraintValidatorContext context;
@@ -35,12 +40,21 @@ public class ClienteInsertValidator implements ConstraintValidator<ClienteInsert
 	}
 
 	private void doValidation() {
+		validatePessoa();
+		validateBah();
+	}
+
+	private void validatePessoa() {
 		if(isPessoaFisicaValida())
 			list.add(new FieldMessage("cpfOuCnpj", "CPF Inválido"));
 		
 		if(isPessoaJuridicaInvalida())
 			list.add(new FieldMessage("cpfOuCnpj", "CNPJ Inválido"));
-			
+	}
+
+	private void validateBah() {
+		if(clienteRepository.findByEmail(objDto.getEmail()) != null)
+			list.add(new FieldMessage("email", "Email já cadastrado"));
 	}
 
 	private boolean isPessoaFisicaValida() {
