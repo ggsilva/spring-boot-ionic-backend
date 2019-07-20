@@ -1,5 +1,6 @@
 package com.ggs.cursomc.domain;
 
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class Cliente extends AppEntity {
 	private String cpfOuCnpj;
 	private Integer tipo;
 
-	@OneToMany(mappedBy = "cliente")
+	@OneToMany(mappedBy = "cliente", cascade = ALL)
 	private List<Endereco> enderecos = new ArrayList<Endereco>();
 
 	@ElementCollection
