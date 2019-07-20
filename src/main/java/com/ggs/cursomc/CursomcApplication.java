@@ -66,6 +66,11 @@ public class CursomcApplication implements CommandLineRunner {
 	private void createCategorias() {
 		Categoria c1 = newCategoria(null, "Informática");
 		Categoria c2 = newCategoria(null, "Escritório");
+		Categoria c3 = newCategoria(null, "Cama, mesa e banho");
+		Categoria c4 = newCategoria(null, "Eletrônicos");
+		Categoria c5 = newCategoria(null, "Jardinagem");
+		Categoria c6 = newCategoria(null, "Decoração");
+		Categoria c7 = newCategoria(null, "Perfumaria");
 		
 		Produto p1 = newProduto(null, "Computador", 2000.0);
 		Produto p2 = newProduto(null, "Impressora", 800.0);
@@ -75,7 +80,7 @@ public class CursomcApplication implements CommandLineRunner {
 		p2.getCategorias().addAll(asList(c1, c2));
 		p3.getCategorias().addAll(asList(c1));
 		
-		categoriaRepo.save(asList(c1, c2));
+		categoriaRepo.save(asList(c1, c2, c3, c4, c5, c6, c7));
 		produtoRepo.save(asList(p1, p2, p3));
 	}
 

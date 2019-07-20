@@ -6,9 +6,13 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.ggs.cursomc.domain.AppEntity;
+import com.ggs.cursomc.domain.Categoria;
 import com.ggs.cursomc.services.exceptions.DataIntegrityException;
 import com.ggs.cursomc.services.exceptions.ObjectNotFoundException;
 
@@ -53,6 +57,11 @@ public abstract class AppService<T extends AppEntity> {
 	
 	public List<T> findAll(){
 		return repository().findAll();
+	}
+	
+	public Page<T> findPage(Integer page, Integer size, String order, String direction){
+		PageRequest pageRequest = new PageRequest(page, size, Direction.valueOf(direction), order);
+		return repository().findAll(pageRequest);
 	}
 
 }
