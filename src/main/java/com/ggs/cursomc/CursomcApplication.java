@@ -8,9 +8,7 @@ import static java.util.Arrays.asList;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -73,9 +71,6 @@ public class CursomcApplication implements CommandLineRunner {
 		Produto p2 = newProduto(null, "Impressora", 800.0);
 		Produto p3 = newProduto(null, "Mouse", 80.0);
 		
-		c1.getProduto().addAll(asList(p1, p2, p3));
-		c2.getProduto().addAll(asList(p3));
-		
 		p1.getCategorias().addAll(asList(c1));
 		p2.getCategorias().addAll(asList(c1, c2));
 		p3.getCategorias().addAll(asList(c1));
@@ -106,10 +101,6 @@ public class CursomcApplication implements CommandLineRunner {
 		Cidade c1 = newCidade(null, "Uberlândia", e1);
 		Cidade c2 = newCidade(null, "Maringá", e2);
 		Cidade c3 = newCidade(null, "Curitiba", e2);
-		
-		e1.getCidades().add(c1);
-		e2.getCidades().add(c2);
-		e2.getCidades().add(c3);
 		
 		estadoRepo.save(asList(e1, e2));
 		cidadeRepo.save(asList(c1, c2, c3));
@@ -151,8 +142,6 @@ public class CursomcApplication implements CommandLineRunner {
 				"152", "Apto 1107 Tr 02", "81850789", 
 				"Batel", curitiba, cl1);
 		
-		cl1.getEnderecos().addAll(asList(e1, e2));
-
 		clienteRepo.save(asList(cl1));
 		enderecoRepo.save(asList(e1, e2));
 	}
@@ -192,8 +181,6 @@ public class CursomcApplication implements CommandLineRunner {
 		Pagamento pCB = newPagamentoCB(p2, PENDENTE, "17/07/2015 20:00", null);
 		p2.setPagamento(pCB);
 		
-		c1.setPedidos(asList(p1, p2));
-		
 		pedidoRepo.save(asList(p1, p2));
 		pagamentoRepo.save(asList(pCC, pCB));
 		
@@ -204,13 +191,6 @@ public class CursomcApplication implements CommandLineRunner {
 		ItemPedido i1 = newItemPedido(p1, pr1, 2000.0, 1, 0.0);
 		ItemPedido i2 = newItemPedido(p1, pr3, 80.0, 2, 0.0);
 		ItemPedido i3 = newItemPedido(p2, pr2, 800.0, 1, 100.0);
-		
-		p1.getItens().addAll(asList(i1, i2));
-		p2.getItens().addAll(asList(i3));
-		
-		pr1.setItens(newSet(asList(i1)));
-		pr2.setItens(newSet(asList(i3)));
-		pr3.setItens(newSet(asList(i1)));
 		
 		itemPedidoRepo.save(asList(i1, i2, i3));
 	}
@@ -264,10 +244,4 @@ public class CursomcApplication implements CommandLineRunner {
 		return i;
 	}	
 	
-	private static <T> Set<T> newSet(List<T> itens) {
-		Set<T> prds = new HashSet<T>();
-		prds.addAll(itens);
-		return prds;
-	}
-
 }

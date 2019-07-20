@@ -7,13 +7,13 @@ import com.ggs.cursomc.domain.Produto;
 import com.ggs.cursomc.repositories.ProdutoRepository;
 
 @Service
-public class ProdutoService {
-	
-	@Autowired
-	ProdutoRepository repository;
-	
-	public Produto buscar(Integer id) {
-		return repository.findOne(id);
+public class ProdutoService extends AppService<Produto> {
+
+	@Autowired ProdutoRepository repository;
+
+	@Override
+	protected ProdutoRepository repository() {
+		return repository;
 	}
 
 }

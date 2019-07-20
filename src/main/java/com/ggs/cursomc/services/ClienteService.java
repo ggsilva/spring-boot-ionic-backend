@@ -5,20 +5,15 @@ import org.springframework.stereotype.Service;
 
 import com.ggs.cursomc.domain.Cliente;
 import com.ggs.cursomc.repositories.ClienteRepository;
-import com.ggs.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
-public class ClienteService {
+public class ClienteService extends AppService<Cliente> {
 
-	@Autowired
-	ClienteRepository repository;
+	@Autowired ClienteRepository repository;
 
-	public Cliente buscar(Integer id) {
-		Cliente obj = repository.findOne(id);
-		if (obj != null)
-			return obj;
-		
-		throw new ObjectNotFoundException("Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName());
+	@Override
+	protected ClienteRepository repository() {
+		return repository;
 	}
 
 }

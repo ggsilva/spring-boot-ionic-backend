@@ -2,7 +2,6 @@ package com.ggs.cursomc.domain;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,9 +18,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ggs.cursomc.domain.enums.TipoCliente;
 
 @Entity
-public class Cliente implements Serializable {
+public class Cliente extends AppEntity {
 
-	private static final long serialVersionUID = -8372411859062391166L;
+	private static final long serialVersionUID = -8378752058219018388L;
 	
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -42,10 +41,12 @@ public class Cliente implements Serializable {
 	@OneToMany(mappedBy = "cliente")
 	private List<Pedido> pedidos = new ArrayList<Pedido>();
 
+	@Override
 	public Integer getId() {
 		return id;
 	}
 
+	@Override
 	public void setId(Integer id) {
 		this.id = id;
 	}
@@ -86,10 +87,6 @@ public class Cliente implements Serializable {
 		return enderecos;
 	}
 
-	public void setEnderecos(List<Endereco> enderecos) {
-		this.enderecos = enderecos;
-	}
-
 	public Set<String> getTelefones() {
 		return telefones;
 	}
@@ -100,35 +97,6 @@ public class Cliente implements Serializable {
 
 	public List<Pedido> getPedidos() {
 		return pedidos;
-	}
-
-	public void setPedidos(List<Pedido> pedidos) {
-		this.pedidos = pedidos;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Cliente other = (Cliente) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
 	}
 
 }

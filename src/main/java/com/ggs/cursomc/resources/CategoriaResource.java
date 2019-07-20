@@ -1,9 +1,12 @@
 package com.ggs.cursomc.resources;
 
 import static org.springframework.http.ResponseEntity.created;
+import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
 import java.net.URI;
@@ -27,7 +30,7 @@ public class CategoriaResource {
 
 	@RequestMapping(method = GET, value = "/{id}")
 	public ResponseEntity<?> find(@PathVariable Integer id) {
-		return ok(service.buscar(id));
+		return ok(service.find(id));
 	}
 
 	@RequestMapping(method = POST)
@@ -38,6 +41,19 @@ public class CategoriaResource {
 
 	private static URI newUri(Categoria c) {
 		return fromCurrentRequest().path("/{id}").buildAndExpand(c.getId()).toUri();
+	}
+
+	@RequestMapping(method = PUT, value = "/{id}")
+	public ResponseEntity<Void> update(@RequestBody Categoria c, @PathVariable Integer id) {
+		c.setId(id);
+		c = service.update(c);
+		return noContent().build();
+	}
+	
+	@RequestMapping(method = DELETE, value = "/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Integer id) {
+		service.delete(id);
+		return noContent().build();
 	}
 
 }
