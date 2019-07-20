@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import com.ggs.cursomc.domain.Categoria;
 import com.ggs.cursomc.domain.Cidade;
@@ -41,6 +42,8 @@ import com.ggs.cursomc.repositories.ProdutoRepository;
 @SpringBootApplication
 public class CursomcApplication implements CommandLineRunner {
 
+	public static ConfigurableApplicationContext contextUniversal;
+	
 	@Autowired private CidadeRepository cidadeRepo;
 	@Autowired private EstadoRepository estadoRepo;
 	@Autowired private PedidoRepository pedidoRepo;
@@ -52,7 +55,7 @@ public class CursomcApplication implements CommandLineRunner {
 	@Autowired private ItemPedidoRepository itemPedidoRepo;
 
 	public static void main(String[] args) {
-		SpringApplication.run(CursomcApplication.class, args);
+		contextUniversal = SpringApplication.run(CursomcApplication.class, args);
 	}
 
 	@Override

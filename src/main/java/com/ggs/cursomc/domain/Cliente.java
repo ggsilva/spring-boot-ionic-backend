@@ -86,7 +86,7 @@ public class Cliente extends AppEntity {
 	public List<Endereco> getEnderecos() {
 		return enderecos;
 	}
-
+	
 	public Set<String> getTelefones() {
 		return telefones;
 	}

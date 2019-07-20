@@ -1,12 +1,16 @@
 package com.ggs.cursomc.resources;
 
 import static java.util.stream.Collectors.toList;
+import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
+import java.net.URI;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ggs.cursomc.domain.Cliente;
 import com.ggs.cursomc.dto.ClienteDTO;
+import com.ggs.cursomc.dto.ClienteNewDTO;
 import com.ggs.cursomc.services.ClienteService;
 
 @RestController
@@ -74,6 +79,17 @@ public class ClienteResource {
 			@RequestParam(name = "direction", defaultValue = "ASC") String direction) {
 		Page<Cliente> findPage = service.findPage(page, size, order, direction);
 		return ok().body(findPage.map(c -> newDto(c)));
+	}
+
+	@RequestMapping(method = POST)
+	public ResponseEntity<Void> insert(@Valid @RequestBody ClienteNewDTO dto) {
+		Cliente obj = service.fromDTO(dto);
+		obj = service.insertB(obj);
+		return created(newUri(obj)).build();
+	}
+
+	private static URI newUri(Cliente c) {
+		return fromCurrentRequest().path("/{id}").buildAndExpand(c.getId()).toUri();
 	}
 
 }

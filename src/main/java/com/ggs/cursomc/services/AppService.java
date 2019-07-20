@@ -9,41 +9,41 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ggs.cursomc.domain.AppEntity;
+import com.ggs.cursomc.repositories.DBRepository;
 import com.ggs.cursomc.services.exceptions.DataIntegrityException;
 import com.ggs.cursomc.services.exceptions.ObjectNotFoundException;
 
 public abstract class AppService<T extends AppEntity> {
 
 	public T find(Integer id) {
-		T obj = repository().findOne(id);
+		T obj = DBRepository.findOne(entityClass(), id);
 		if (obj != null)
 			return obj;
 		throw new ObjectNotFoundException("Objeto não encontrado! Id: " + id + ", Tipo: " + nameClass());
 	}
 
 	private String nameClass() {
-		return classEntity().getTypeName();
+		return entityClass().getTypeName();
 	}
 
 	@SuppressWarnings("unchecked")
-	private Class<T> classEntity() {
+	private Class<T> entityClass() {
 		return (Class<T>)((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 
-	protected abstract JpaRepository<T, Integer> repository();
-
+	@Transactional
 	public T insert(T c) {
 		c.setId(null);
-		return repository().save(c);
+		return DBRepository.save(c);
 	}
 
 	public T update(T c) {
 		T obj = find(c.getId());
 		updateData(obj, c);
-		return repository().save(obj);
+		return DBRepository.save(obj);
 	}
 	
 	protected void updateData(T oldObj, T newObj) {};
@@ -51,19 +51,19 @@ public abstract class AppService<T extends AppEntity> {
 	public void delete(Integer id) {
 		find(id);
 		try {
-			repository().delete(id);
+			DBRepository.delete(entityClass(), id);
 		}catch (DataIntegrityViolationException e) {
-			throw new DataIntegrityException(format("Não é possível excluir %s que possua associações", classEntity().getSimpleName()));
+			throw new DataIntegrityException(format("Não é possível excluir %s que possua associações", entityClass().getSimpleName()));
 		}
 	}
 	
 	public List<T> findAll(){
-		return repository().findAll();
+		return DBRepository.findAll(entityClass());
 	}
 	
 	public Page<T> findPage(Integer page, Integer size, String order, String direction){
 		PageRequest pageRequest = new PageRequest(page, size, Direction.valueOf(direction), order);
-		return repository().findAll(pageRequest);
+		return DBRepository.findAll(entityClass(), pageRequest);
 	}
 
 }
