@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.ApplicationContext;
 
 import com.ggs.cursomc.domain.Categoria;
 import com.ggs.cursomc.domain.Cidade;
@@ -29,41 +29,28 @@ import com.ggs.cursomc.domain.Pedido;
 import com.ggs.cursomc.domain.Produto;
 import com.ggs.cursomc.domain.enums.EstadoPagamento;
 import com.ggs.cursomc.domain.enums.TipoCliente;
-import com.ggs.cursomc.repositories.CategoriaRepository;
-import com.ggs.cursomc.repositories.CidadeRepository;
-import com.ggs.cursomc.repositories.ClienteRepository;
-import com.ggs.cursomc.repositories.EnderecoRepository;
-import com.ggs.cursomc.repositories.EstadoRepository;
-import com.ggs.cursomc.repositories.ItemPedidoRepository;
-import com.ggs.cursomc.repositories.PagamentoRepository;
-import com.ggs.cursomc.repositories.PedidoRepository;
-import com.ggs.cursomc.repositories.ProdutoRepository;
+import com.ggs.cursomc.repositories.DBRepository;
 
 @SpringBootApplication
 public class CursomcApplication implements CommandLineRunner {
 
-	public static ConfigurableApplicationContext contextUniversal;
+	@Autowired private ApplicationContext appContext;	
 	
-	@Autowired private CidadeRepository cidadeRepo;
-	@Autowired private EstadoRepository estadoRepo;
-	@Autowired private PedidoRepository pedidoRepo;
-	@Autowired private ClienteRepository clienteRepo;
-	@Autowired private ProdutoRepository produtoRepo;
-	@Autowired private EnderecoRepository enderecoRepo;
-	@Autowired private CategoriaRepository categoriaRepo;
-	@Autowired private PagamentoRepository pagamentoRepo;
-	@Autowired private ItemPedidoRepository itemPedidoRepo;
-
 	public static void main(String[] args) {
-		contextUniversal = SpringApplication.run(CursomcApplication.class, args);
+		SpringApplication.run(CursomcApplication.class, args);
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
+		init();
 		createCategorias();
 		createEstados();
 		createPessoas();
 		createPedidos();
+	}
+
+	private void init() {
+		DBRepository.instance().setContext(appContext);
 	}
 
 	private void createCategorias() {
@@ -83,8 +70,8 @@ public class CursomcApplication implements CommandLineRunner {
 		p2.getCategorias().addAll(asList(c1, c2));
 		p3.getCategorias().addAll(asList(c1));
 		
-		categoriaRepo.save(asList(c1, c2, c3, c4, c5, c6, c7));
-		produtoRepo.save(asList(p1, p2, p3));
+		DBRepository.save(asList(c1, c2, c3, c4, c5, c6, c7));
+		DBRepository.save(asList(p1, p2, p3));
 	}
 
 	private static Produto newProduto(Integer id, String nome, Double preco) {
@@ -110,8 +97,8 @@ public class CursomcApplication implements CommandLineRunner {
 		Cidade c2 = newCidade(null, "Maringá", e2);
 		Cidade c3 = newCidade(null, "Curitiba", e2);
 		
-		estadoRepo.save(asList(e1, e2));
-		cidadeRepo.save(asList(c1, c2, c3));
+		DBRepository.save(asList(e1, e2));
+		DBRepository.save(asList(c1, c2, c3));
 	}
 	
 	private static Cidade newCidade(Integer id, String nome, Estado estado) {
@@ -137,8 +124,8 @@ public class CursomcApplication implements CommandLineRunner {
 				PESSOA_FISICA, 
 				asList("(44) 9 9927 7225", "(41) 9 9945 7174"));
 		
-		Cidade maringa = cidadeRepo.findOne(2);
-		Cidade curitiba = cidadeRepo.findOne(3);
+		Cidade maringa = DBRepository.findOne(Cidade.class, 2);
+		Cidade curitiba = DBRepository.findOne(Cidade.class, 3);
 		
 		Endereco e1 = newEndereco(
 				"Rua Nardina Rodrigues Johansen",
@@ -150,8 +137,8 @@ public class CursomcApplication implements CommandLineRunner {
 				"152", "Apto 1107 Tr 02", "81850789", 
 				"Batel", curitiba, cl1);
 		
-		clienteRepo.save(asList(cl1));
-		enderecoRepo.save(asList(e1, e2));
+		DBRepository.save(asList(cl1));
+		DBRepository.save(asList(e1, e2));
 	}
 
 	private static Endereco newEndereco(String logradouro, String numero, String complemento, String cep, String bairro, Cidade cidade, Cliente cliente) {
@@ -177,9 +164,9 @@ public class CursomcApplication implements CommandLineRunner {
 	}
 
 	private void createPedidos() {
-		Cliente c1 = clienteRepo.findOne(1);
-		Endereco e1 = enderecoRepo.findOne(1);
-		Endereco e2 = enderecoRepo.findOne(2);
+		Cliente c1 = DBRepository.findOne(Cliente.class, 1);
+		Endereco e1 = DBRepository.findOne(Endereco.class, 1);
+		Endereco e2 = DBRepository.findOne(Endereco.class, 2);
 		
 		Pedido p1 = newPedido(c1, e1, "29/10/2012 19:35");
 		Pagamento pCC = newPagamentoCC(p1, QUITADO, 6);
@@ -189,18 +176,18 @@ public class CursomcApplication implements CommandLineRunner {
 		Pagamento pCB = newPagamentoCB(p2, PENDENTE, "17/07/2015 20:00", null);
 		p2.setPagamento(pCB);
 		
-		pedidoRepo.save(asList(p1, p2));
-		pagamentoRepo.save(asList(pCC, pCB));
+		DBRepository.save(asList(p1, p2));
+		DBRepository.save(asList(pCC, pCB));
 		
-		Produto pr1 = produtoRepo.findOne(1);
-		Produto pr2 = produtoRepo.findOne(2);
-		Produto pr3 = produtoRepo.findOne(3);
+		Produto pr1 = DBRepository.findOne(Produto.class, 1);
+		Produto pr2 = DBRepository.findOne(Produto.class, 2);
+		Produto pr3 = DBRepository.findOne(Produto.class, 3);
 		
 		ItemPedido i1 = newItemPedido(p1, pr1, 2000.0, 1, 0.0);
 		ItemPedido i2 = newItemPedido(p1, pr3, 80.0, 2, 0.0);
 		ItemPedido i3 = newItemPedido(p2, pr2, 800.0, 1, 100.0);
 		
-		itemPedidoRepo.save(asList(i1, i2, i3));
+		DBRepository.save(asList(i1, i2, i3));
 	}
 
 	private static Pedido newPedido(Cliente cliente, Endereco endereco, String date) { 
