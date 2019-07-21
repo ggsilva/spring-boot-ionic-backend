@@ -41,7 +41,7 @@ public class ClienteInsertValidator implements ConstraintValidator<ClienteInsert
 
 	private void doValidation() {
 		validatePessoa();
-		validateBah();
+		validateEmail();
 	}
 
 	private void validatePessoa() {
@@ -52,7 +52,7 @@ public class ClienteInsertValidator implements ConstraintValidator<ClienteInsert
 			list.add(new FieldMessage("cpfOuCnpj", "CNPJ Inválido"));
 	}
 
-	private void validateBah() {
+	private void validateEmail() {
 		if(clienteRepository.findByEmail(objDto.getEmail()) != null)
 			list.add(new FieldMessage("email", "Email já cadastrado"));
 	}
