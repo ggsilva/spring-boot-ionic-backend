@@ -34,21 +34,21 @@ public class DBRepository {
 
 	public static <T> T save(T obj) {
 		if (obj != null)
-			repository(obj).save(obj);
+			repositoryOfEntity(obj).save(obj);
 		return obj;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T> JpaRepository<T, Integer> repository(T obj) {
-		return repository((Class<T>) obj.getClass());
+	private static <T> JpaRepository<T, Integer> repositoryOfEntity(T obj) {
+		return repositoryOfEntityClass((Class<T>) obj.getClass());
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> JpaRepository<T, Integer> repository(Class<T> entityClass) {
+	private static <T> JpaRepository<T, Integer> repositoryOfEntityClass(Class<T> entityClass) {
 		JpaRepository<?, Integer> repo = repositories().get(entityClass);
 		
 		if(isNeedVerifySuperClass(entityClass, repo))
-			repo = repository(entityClass.getSuperclass());
+			repo = repositoryOfEntityClass(entityClass.getSuperclass());
 		
 		return (JpaRepository<T, Integer>) repo;
 	}
@@ -98,19 +98,28 @@ public class DBRepository {
 	}
 
 	public static <T> T findOne(Class<T> entityClass, Integer id) {
-		return repository(entityClass).findOne(id);
+		return repositoryOfEntityClass(entityClass).findOne(id);
 	}
 
 	public static <T> List<T> findAll(Class<T> entityClass) {
-		return repository(entityClass).findAll();
+		return repositoryOfEntityClass(entityClass).findAll();
 	}
 
 	public static <T> void delete(Class<T> entityClass, Integer id) {
-		repository(entityClass).delete(id);
+		repositoryOfEntityClass(entityClass).delete(id);
 	}
 
 	public static <T> Page<T> findAll(Class<T> entityClass, PageRequest pageRequest) {
-		return repository(entityClass).findAll(pageRequest);
+		return repositoryOfEntityClass(entityClass).findAll(pageRequest);
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked", "static-access" })
+	public static <T extends JpaRepository> T repository(Class<T> classRepo) {
+		for (JpaRepository<?, Integer> jpaRepository : instance().repositories().values())
+			for (Class interfaceClass : jpaRepository.getClass().getInterfaces())
+				if(interfaceClass.equals(classRepo))
+					return (T)jpaRepository;
+		return null;
 	}
 
 }

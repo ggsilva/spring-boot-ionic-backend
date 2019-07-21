@@ -54,37 +54,51 @@ public class CursomcApplication implements CommandLineRunner {
 	}
 
 	private void createCategorias() {
-		Categoria c1 = newCategoria(null, "Informática");
-		Categoria c2 = newCategoria(null, "Escritório");
-		Categoria c3 = newCategoria(null, "Cama, mesa e banho");
-		Categoria c4 = newCategoria(null, "Eletrônicos");
-		Categoria c5 = newCategoria(null, "Jardinagem");
-		Categoria c6 = newCategoria(null, "Decoração");
-		Categoria c7 = newCategoria(null, "Perfumaria");
+		Categoria c1 = newCategoria("Informática");
+		Categoria c2 = newCategoria("Escritório");
+		Categoria c3 = newCategoria("Cama, mesa e banho");
+		Categoria c4 = newCategoria("Eletrônicos");
+		Categoria c5 = newCategoria("Jardinagem");
+		Categoria c6 = newCategoria("Decoração");
+		Categoria c7 = newCategoria("Perfumaria");
 		
-		Produto p1 = newProduto(null, "Computador", 2000.0);
-		Produto p2 = newProduto(null, "Impressora", 800.0);
-		Produto p3 = newProduto(null, "Mouse", 80.0);
+		Produto p01 = newProduto("Computador", 2000.0);
+		Produto p02 = newProduto("Impressora", 800.0);
+		Produto p03 = newProduto("Mouse", 80.0);
+		Produto p04 = newProduto("Mesa de escritório", 300.0);
+		Produto p05 = newProduto("Toalha", 50.0);
+		Produto p06 = newProduto("Colcha", 200.0);
+		Produto p07 = newProduto("TV true color", 1200.0);
+		Produto p08 = newProduto("Roçadeira", 800.0);
+		Produto p09 = newProduto("Abajour", 100.0);
+		Produto p10 = newProduto("Pendente", 180.0);
+		Produto p11 = newProduto("Shampoo", 90.0);
 		
-		p1.getCategorias().addAll(asList(c1));
-		p2.getCategorias().addAll(asList(c1, c2));
-		p3.getCategorias().addAll(asList(c1));
+		p01.getCategorias().addAll(asList(c1, c4));
+		p02.getCategorias().addAll(asList(c1, c2, c4));
+		p03.getCategorias().addAll(asList(c1, c4));
+		p04.getCategorias().addAll(asList(c2));
+		p05.getCategorias().addAll(asList(c3));
+		p06.getCategorias().addAll(asList(c3));
+		p07.getCategorias().addAll(asList(c4));
+		p08.getCategorias().addAll(asList(c5));
+		p09.getCategorias().addAll(asList(c6));
+		p10.getCategorias().addAll(asList(c6));
+		p11.getCategorias().addAll(asList(c7));
 		
 		DBRepository.save(asList(c1, c2, c3, c4, c5, c6, c7));
-		DBRepository.save(asList(p1, p2, p3));
+		DBRepository.save(asList(p01, p02, p03, p04, p05, p06, p07, p08, p09, p10, p11));
 	}
 
-	private static Produto newProduto(Integer id, String nome, Double preco) {
+	private static Produto newProduto(String nome, Double preco) {
 		Produto p = new Produto();
-		p.setId(id);
 		p.setNome(nome);
 		p.setPreco(preco);
 		return p;
 	}
 
-	private static Categoria newCategoria(Integer id, String nome) {
+	private static Categoria newCategoria(String nome) {
 		Categoria c = new Categoria();
-		c.setId(id);
 		c.setNome(nome);
 		return c;
 	}
