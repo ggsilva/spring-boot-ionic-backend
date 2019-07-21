@@ -87,5 +87,9 @@ public class Pedido extends AppEntity {
 	public Set<ItemPedido> getItens() {
 		return itens;
 	}
+	
+	public Double getValorTotal() {
+		return getItens().stream().mapToDouble(i -> i.getSubTotal()).sum();
+	}
 
 }
