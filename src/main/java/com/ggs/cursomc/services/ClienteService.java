@@ -58,7 +58,8 @@ public class ClienteService extends AppService<Cliente> {
 	}
 
 	@Transactional
-	public Cliente insertB(Cliente c) {
+	@Override
+	public Cliente insert(Cliente c) {
 		c.setId(null);
 		DBRepository.save(c);
 		DBRepository.save(c.getEnderecos());

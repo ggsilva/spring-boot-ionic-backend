@@ -84,7 +84,7 @@ public class ClienteResource {
 	@RequestMapping(method = POST)
 	public ResponseEntity<Void> insert(@Valid @RequestBody ClienteNewDTO dto) {
 		Cliente obj = service.fromDTO(dto);
-		obj = service.insertB(obj);
+		obj = service.insert(obj);
 		return created(newUri(obj)).build();
 	}
 

@@ -1,6 +1,7 @@
 package com.ggs.cursomc.repositories;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -90,7 +91,7 @@ public class DBRepository {
 		return (Class<?>)((ParameterizedType)entityClass.getGenericInterfaces()[0]).getActualTypeArguments()[0];
 	}
 
-	public static <T> List<T> save(List<T> obj) {
+	public static <T> Collection<T> save(Collection<T> obj) {
 		if (obj != null)
 			for (T t : obj)
 				save(t);
