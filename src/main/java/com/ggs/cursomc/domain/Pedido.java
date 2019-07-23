@@ -1,10 +1,15 @@
 package com.ggs.cursomc.domain;
 
+import static java.text.NumberFormat.getCurrencyInstance;
 import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -92,4 +97,26 @@ public class Pedido extends AppEntity {
 		return getItens().stream().mapToDouble(i -> i.getSubTotal()).sum();
 	}
 
+	@Override
+	public String toString() {
+		NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append("Pedido número: ");
+		builder.append(getId());
+		builder.append(", Instante: ");
+		builder.append(sdf.format(getInstante()));
+		builder.append(", Cliente: ");
+		builder.append(getCliente().getNome());
+		builder.append(", Situação do pagamento: ");
+		builder.append(getPagamento().getEstado().getDescricao());
+		builder.append("\nDetalhes\n");
+		getItens().stream().forEach(i -> builder.append(i));
+		builder.append("Valor total: ");
+		builder.append(nf.format(getValorTotal()));
+		
+		return builder.toString();
+	}
+		
 }

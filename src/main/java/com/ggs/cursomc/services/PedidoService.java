@@ -6,8 +6,13 @@ import static java.util.Calendar.DAY_OF_MONTH;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.springframework.stereotype.Service;
+import javax.persistence.EntityManager;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ggs.cursomc.domain.Cliente;
 import com.ggs.cursomc.domain.ItemPedido;
 import com.ggs.cursomc.domain.PagamentoComBoleto;
 import com.ggs.cursomc.domain.PagamentoComCartao;
@@ -18,18 +23,28 @@ import com.ggs.cursomc.repositories.DBRepository;
 @Service
 public class PedidoService extends AppService<Pedido> {
 	
+	@Autowired EntityManager em;
+	
+	@Transactional
 	@Override
 	public Pedido insert(Pedido p) {
 		p.setId(null);
 		p.setInstante(new Date());
 		
+		ajustaClientes(p);
 		ajustaPagamento(p);
 		ajustaItens(p);
 		
 		DBRepository.save(p);
 		DBRepository.save(p.getItens());
 		DBRepository.save(p.getPagamento());
+
 		return p;
+	}
+
+	private void ajustaClientes(Pedido p) {
+		Cliente cliente = DBRepository.findOne(Cliente.class, p.getCliente().getId());
+		p.setCliente(cliente);
 	}
 
 	private void ajustaPagamento(Pedido p) {
@@ -55,7 +70,10 @@ public class PedidoService extends AppService<Pedido> {
 	private static void ajustaItem(Pedido p, ItemPedido i) {
 		i.setDesconto(0.0);
 		i.setPedido(p);
-		i.setPreco(produto(i).getPreco());
+		
+		Produto produto = produto(i);
+		i.setProduto(produto);
+		i.setPreco(produto.getPreco());
 	}
 
 	private static Produto produto(ItemPedido item) {

@@ -32,11 +32,18 @@ import com.ggs.cursomc.repositories.DBRepository;
 @Service
 public class DBService {
 
+	@Autowired private ApplicationContext appContext;	
+
 	public void instantiateDatabase()  {
+		init();
 		createCategorias();
 		createEstados();
 		createPessoas();
 		createPedidos();
+	}
+
+	private void init() {
+		DBRepository.instance().setContext(appContext);
 	}
 
 	private void createCategorias() {
