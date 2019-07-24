@@ -6,8 +6,6 @@ import static java.util.Calendar.DAY_OF_MONTH;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.persistence.EntityManager;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,11 +21,10 @@ import com.ggs.cursomc.repositories.DBRepository;
 @Service
 public class PedidoService extends AppService<Pedido> {
 	
-	@Autowired EntityManager em;
+	@Autowired private EmailService emailService;
 	
 	@Transactional
-	@Override
-	public Pedido insert(Pedido p) {
+	public Pedido realizaPedido(Pedido p) {
 		p.setId(null);
 		p.setInstante(new Date());
 		
@@ -38,6 +35,8 @@ public class PedidoService extends AppService<Pedido> {
 		DBRepository.save(p);
 		DBRepository.save(p.getItens());
 		DBRepository.save(p.getPagamento());
+		
+		emailService.sendOrderConfirmationEmail(p);
 
 		return p;
 	}

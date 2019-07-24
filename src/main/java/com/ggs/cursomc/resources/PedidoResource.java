@@ -33,7 +33,7 @@ public class PedidoResource {
 
 	@RequestMapping(method = POST)
 	public ResponseEntity<Void> insert(@Valid @RequestBody Pedido dto) {
-		dto = service.insert(dto);
+		dto = service.realizaPedido(dto);
 		return created(newUri(dto)).build();
 	}
 

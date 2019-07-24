@@ -1,10 +1,8 @@
 package com.ggs.cursomc.domain;
 
-import static java.text.NumberFormat.getCurrencyInstance;
 import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.GenerationType.IDENTITY;
 
-import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
