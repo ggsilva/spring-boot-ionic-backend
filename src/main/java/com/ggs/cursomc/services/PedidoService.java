@@ -36,7 +36,7 @@ public class PedidoService extends AppService<Pedido> {
 		DBRepository.save(p.getItens());
 		DBRepository.save(p.getPagamento());
 		
-		emailService.sendOrderConfirmationEmail(p);
+		emailService.sendOrderConfirmationHtmlEmail(p);
 
 		return p;
 	}
