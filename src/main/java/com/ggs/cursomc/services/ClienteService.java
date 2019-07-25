@@ -2,6 +2,8 @@ package com.ggs.cursomc.services;
 
 import java.util.HashSet;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,8 @@ import com.ggs.cursomc.repositories.DBRepository;
 
 @Service
 public class ClienteService extends AppService<Cliente> {
+	
+	@Autowired BCryptPasswordEncoder bc;
 
 	@Override
 	protected void updateData(Cliente oldObj, Cliente newObj) {
@@ -37,6 +41,7 @@ public class ClienteService extends AppService<Cliente> {
 		obj.setNome(dto.getNome());
 		obj.setTelefones(new HashSet<String>(dto.getTelefones()));
 		obj.setTipo(TipoCliente.toEnum(dto.getTipo()));
+		obj.setSenha(bc.encode(dto.getSenha()));
 		
 		Cidade cidade = new Cidade();
 		cidade.setId(dto.getCidadeId());

@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ggs.cursomc.domain.Categoria;
@@ -31,7 +32,8 @@ import com.ggs.cursomc.repositories.DBRepository;
 
 @Service
 public class DBService {
-
+	
+	@Autowired BCryptPasswordEncoder bc;
 	@Autowired private ApplicationContext appContext;	
 
 	public void instantiateDatabase()  {
@@ -129,7 +131,7 @@ public class DBService {
 				"alanappereira@outlook.com", 
 				"08789093976",
 				PESSOA_FISICA, 
-				asList("(44) 9 9927 7225", "(41) 9 9945 7174"));
+				asList("(44) 9 9927 7225", "(41) 9 9945 7174"), bc.encode("123"));
 		
 		Cidade maringa = DBRepository.findOne(Cidade.class, 2);
 		Cidade curitiba = DBRepository.findOne(Cidade.class, 3);
@@ -160,12 +162,13 @@ public class DBService {
 		return e;
 	}
 
-	private static Cliente newCliente(String nome, String email, String cpfOuCnpj, TipoCliente tipo, List<String> telefones) {
+	private static Cliente newCliente(String nome, String email, String cpfOuCnpj, TipoCliente tipo, List<String> telefones, String senha) {
 		Cliente c = new Cliente();
 		c.setNome(nome);
 		c.setEmail(email);
 		c.setCpfOuCnpj(cpfOuCnpj);
 		c.setTipo(tipo);
+		c.setSenha(senha);
 		c.getTelefones().addAll(telefones);
 		return c;
 	}

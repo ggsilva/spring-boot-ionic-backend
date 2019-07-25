@@ -34,6 +34,9 @@ public class Cliente extends AppEntity {
 	
 	private String cpfOuCnpj;
 	private Integer tipo;
+	
+	@JsonIgnore
+	private String senha;
 
 	@OneToMany(mappedBy = "cliente", cascade = ALL)
 	private List<Endereco> enderecos = new ArrayList<Endereco>();
@@ -86,6 +89,14 @@ public class Cliente extends AppEntity {
 
 	public void setTipo(TipoCliente tipo) {
 		this.tipo = tipo.getCod();
+	}
+
+	public String getSenha() {
+		return senha;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
 	}
 	
 	public List<Endereco> getEnderecos() {
