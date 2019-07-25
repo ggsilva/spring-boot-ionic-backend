@@ -1,10 +1,13 @@
 package com.ggs.cursomc.domain;
 
+import static com.ggs.cursomc.domain.enums.Perfil.CLIENTE;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
+import static java.util.stream.Collectors.toSet;
 import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.IDENTITY;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +20,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ggs.cursomc.domain.enums.Perfil;
 import com.ggs.cursomc.domain.enums.TipoCliente;
 
 @Entity
@@ -39,15 +43,19 @@ public class Cliente extends AppEntity {
 	private String senha;
 
 	@OneToMany(mappedBy = "cliente", cascade = ALL)
-	private List<Endereco> enderecos = new ArrayList<Endereco>();
+	private List<Endereco> enderecos = newArrayList();
 
 	@ElementCollection
 	@CollectionTable(name = "TELEFONE")
-	private Set<String> telefones = new HashSet<String>();
+	private Set<String> telefones = newHashSet();
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "cliente")
-	private List<Pedido> pedidos = new ArrayList<Pedido>();
+	private List<Pedido> pedidos = newArrayList();
+
+	@ElementCollection(fetch = EAGER)
+	@CollectionTable(name = "PERFIS")
+	private Set<Integer> perfis = newHashSet(CLIENTE.getCod());
 
 	@Override
 	public Integer getId() {
@@ -113,6 +121,14 @@ public class Cliente extends AppEntity {
 
 	public List<Pedido> getPedidos() {
 		return pedidos;
+	}
+
+	public Set<Perfil> getPerfis() {
+		return perfis.stream().map(i -> Perfil.toEnum(i)).collect(toSet());
+	}
+
+	public void addPerfil(Perfil perfis) {
+		this.perfis.add(perfis.getCod());
 	}
 
 }

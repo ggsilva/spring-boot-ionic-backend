@@ -3,7 +3,7 @@ package com.ggs.cursomc.services;
 import static com.ggs.cursomc.domain.enums.EstadoPagamento.PENDENTE;
 import static com.ggs.cursomc.domain.enums.EstadoPagamento.QUITADO;
 import static com.ggs.cursomc.domain.enums.TipoCliente.PESSOA_FISICA;
-import static java.util.Arrays.asList;
+import static com.google.common.collect.Lists.newArrayList;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,6 +27,7 @@ import com.ggs.cursomc.domain.PagamentoComCartao;
 import com.ggs.cursomc.domain.Pedido;
 import com.ggs.cursomc.domain.Produto;
 import com.ggs.cursomc.domain.enums.EstadoPagamento;
+import com.ggs.cursomc.domain.enums.Perfil;
 import com.ggs.cursomc.domain.enums.TipoCliente;
 import com.ggs.cursomc.repositories.DBRepository;
 
@@ -69,20 +70,20 @@ public class DBService {
 		Produto p10 = newProduto("Pendente", 180.0);
 		Produto p11 = newProduto("Shampoo", 90.0);
 		
-		p01.getCategorias().addAll(asList(c1, c4));
-		p02.getCategorias().addAll(asList(c1, c2, c4));
-		p03.getCategorias().addAll(asList(c1, c4));
-		p04.getCategorias().addAll(asList(c2));
-		p05.getCategorias().addAll(asList(c3));
-		p06.getCategorias().addAll(asList(c3));
-		p07.getCategorias().addAll(asList(c4));
-		p08.getCategorias().addAll(asList(c5));
-		p09.getCategorias().addAll(asList(c6));
-		p10.getCategorias().addAll(asList(c6));
-		p11.getCategorias().addAll(asList(c7));
+		p01.getCategorias().addAll(newArrayList(c1, c4));
+		p02.getCategorias().addAll(newArrayList(c1, c2, c4));
+		p03.getCategorias().addAll(newArrayList(c1, c4));
+		p04.getCategorias().addAll(newArrayList(c2));
+		p05.getCategorias().addAll(newArrayList(c3));
+		p06.getCategorias().addAll(newArrayList(c3));
+		p07.getCategorias().addAll(newArrayList(c4));
+		p08.getCategorias().addAll(newArrayList(c5));
+		p09.getCategorias().addAll(newArrayList(c6));
+		p10.getCategorias().addAll(newArrayList(c6));
+		p11.getCategorias().addAll(newArrayList(c7));
 		
-		DBRepository.save(asList(c1, c2, c3, c4, c5, c6, c7));
-		DBRepository.save(asList(p01, p02, p03, p04, p05, p06, p07, p08, p09, p10, p11));
+		DBRepository.save(newArrayList(c1, c2, c3, c4, c5, c6, c7));
+		DBRepository.save(newArrayList(p01, p02, p03, p04, p05, p06, p07, p08, p09, p10, p11));
 	}
 
 	private static Produto newProduto(String nome, Double preco) {
@@ -106,8 +107,8 @@ public class DBService {
 		Cidade c2 = newCidade(null, "Maringá", e2);
 		Cidade c3 = newCidade(null, "Curitiba", e2);
 		
-		DBRepository.save(asList(e1, e2));
-		DBRepository.save(asList(c1, c2, c3));
+		DBRepository.save(newArrayList(e1, e2));
+		DBRepository.save(newArrayList(c1, c2, c3));
 	}
 	
 	private static Cidade newCidade(Integer id, String nome, Estado estado) {
@@ -129,9 +130,17 @@ public class DBService {
 		Cliente cl1 = newCliente(
 				"Alana de Paula Pereira Gabriel da Silva", 
 				"alanappereira@outlook.com", 
-				"08789093976",
+				"68967363567",
 				PESSOA_FISICA, 
-				asList("(44) 9 9927 7225", "(41) 9 9945 7174"), bc.encode("123"));
+				newArrayList("(44) 9 9927 7225", "(41) 9 9945 7174"), bc.encode("123"));
+		
+		Cliente cl2 = newCliente(
+				"Guilherme Gabriel da Silva", 
+				"ggabriel.cwb@gmail.com", 
+				"11743395000",
+				PESSOA_FISICA, 
+				newArrayList("(41) 9 9945 7174", "(44) 9 9927 7225"), bc.encode("915"));
+		cl2.addPerfil(Perfil.ADMIN);
 		
 		Cidade maringa = DBRepository.findOne(Cidade.class, 2);
 		Cidade curitiba = DBRepository.findOne(Cidade.class, 3);
@@ -146,8 +155,13 @@ public class DBService {
 				"152", "Apto 1107 Tr 02", "81850789", 
 				"Batel", curitiba, cl1);
 		
-		DBRepository.save(asList(cl1));
-		DBRepository.save(asList(e1, e2));
+		Endereco e3 = newEndereco(
+				"Rua Aristides Lobo",
+				"328", "Apto 204", "87030240", 
+				"Batel", maringa, cl2);
+		
+		DBRepository.save(newArrayList(cl1, cl2));
+		DBRepository.save(newArrayList(e1, e2, e3));
 	}
 
 	private static Endereco newEndereco(String logradouro, String numero, String complemento, String cep, String bairro, Cidade cidade, Cliente cliente) {
@@ -186,8 +200,8 @@ public class DBService {
 		Pagamento pCB = newPagamentoCB(p2, PENDENTE, "17/07/2015 20:00", null);
 		p2.setPagamento(pCB);
 		
-		DBRepository.save(asList(p1, p2));
-		DBRepository.save(asList(pCC, pCB));
+		DBRepository.save(newArrayList(p1, p2));
+		DBRepository.save(newArrayList(pCC, pCB));
 		
 		Produto pr1 = DBRepository.findOne(Produto.class, 1);
 		Produto pr2 = DBRepository.findOne(Produto.class, 2);
@@ -197,7 +211,7 @@ public class DBService {
 		ItemPedido i2 = newItemPedido(p1, pr3, 80.0, 2, 0.0);
 		ItemPedido i3 = newItemPedido(p2, pr2, 800.0, 1, 100.0);
 		
-		DBRepository.save(asList(i1, i2, i3));
+		DBRepository.save(newArrayList(i1, i2, i3));
 	}
 
 	private static Pedido newPedido(Cliente cliente, Endereco endereco, String date) { 
