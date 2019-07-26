@@ -18,6 +18,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,13 +49,15 @@ public class ClienteResource {
 		cat = service.update(cat);
 		return noContent().build();
 	}
-	
+
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(method = DELETE, value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Integer id) {
 		service.delete(id);
 		return noContent().build();
 	}
 
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(method = GET)
 	public ResponseEntity<List<ClienteDTO>> findAll() {
 		List<ClienteDTO> dtos = service.findAll()
@@ -71,6 +74,7 @@ public class ClienteResource {
 		return dto;
 	}
 
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(method = GET, value = "/page")
 	public ResponseEntity<Page<ClienteDTO>> findPage(
 			@RequestParam(name = "page", defaultValue = "0") Integer page,
