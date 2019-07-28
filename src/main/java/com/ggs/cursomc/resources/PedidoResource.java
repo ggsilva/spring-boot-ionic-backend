@@ -11,10 +11,12 @@ import java.net.URI;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ggs.cursomc.domain.Pedido;
@@ -39,6 +41,16 @@ public class PedidoResource {
 
 	private static URI newUri(Pedido p) {
 		return fromCurrentRequest().path("/{id}").buildAndExpand(p.getId()).toUri();
+	}
+
+	@RequestMapping(method = GET)
+	public ResponseEntity<Page<Pedido>> findPage(
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "size", defaultValue = "24") Integer size,
+			@RequestParam(name = "order", defaultValue = "instante") String order,
+			@RequestParam(name = "direction", defaultValue = "DESC") String direction) {
+		Page<Pedido> pedidos = service.findPage(page, size, order, direction);
+		return ok().body(pedidos);
 	}
 
 }

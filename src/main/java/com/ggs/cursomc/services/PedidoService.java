@@ -7,6 +7,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +20,9 @@ import com.ggs.cursomc.domain.PagamentoComCartao;
 import com.ggs.cursomc.domain.Pedido;
 import com.ggs.cursomc.domain.Produto;
 import com.ggs.cursomc.repositories.DBRepository;
+import com.ggs.cursomc.repositories.PedidoRepository;
+import com.ggs.cursomc.security.UserSS;
+import com.ggs.cursomc.services.exceptions.AuthorizationException;
 
 @Service
 public class PedidoService extends AppService<Pedido> {
@@ -77,6 +83,18 @@ public class PedidoService extends AppService<Pedido> {
 
 	private static Produto produto(ItemPedido item) {
 		return DBRepository.findOne(Produto.class, item.getProduto().getId());
+	}
+	
+	@Override
+	public Page<Pedido> findPage(Integer page, Integer size, String order, String direction) {
+		UserSS user = UserService.authenticated();
+		
+		if(user == null)
+			throw new AuthorizationException("Acesso negado");
+		
+		Cliente cliente = DBRepository.findOne(Cliente.class, user.getId());
+		PageRequest pageRequest = new PageRequest(page, size, Direction.valueOf(direction), order);
+		return DBRepository.repository(PedidoRepository.class).findByCliente(cliente, pageRequest);
 	}
 	
 }
