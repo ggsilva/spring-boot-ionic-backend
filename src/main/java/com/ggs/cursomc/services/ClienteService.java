@@ -10,10 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ggs.cursomc.domain.Cidade;
 import com.ggs.cursomc.domain.Cliente;
 import com.ggs.cursomc.domain.Endereco;
+import com.ggs.cursomc.domain.enums.Perfil;
 import com.ggs.cursomc.domain.enums.TipoCliente;
 import com.ggs.cursomc.dto.ClienteDTO;
 import com.ggs.cursomc.dto.ClienteNewDTO;
 import com.ggs.cursomc.repositories.DBRepository;
+import com.ggs.cursomc.security.UserSS;
+import com.ggs.cursomc.services.exceptions.AuthorizationException;
 
 @Service
 public class ClienteService extends AppService<Cliente> {
@@ -69,6 +72,20 @@ public class ClienteService extends AppService<Cliente> {
 		DBRepository.save(c);
 		DBRepository.save(c.getEnderecos());
 		return c;
+	}
+	
+	@Override
+	public Cliente find(Integer id) {
+		if(isUserPermitido(id))
+			return super.find(id);
+		throw new AuthorizationException("Acesso negado");
+	}
+
+	private boolean isUserPermitido(Integer id) {
+		UserSS userSS = UserService.authenticated();
+		return userSS != null
+			&& userSS.hasRole(Perfil.ADMIN)
+			&& userSS.getId() == id;
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.ggs.cursomc.resources.exception;
 
 import static java.lang.System.currentTimeMillis;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.ResponseEntity.status;
 
@@ -12,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.ggs.cursomc.services.exceptions.AuthorizationException;
 import com.ggs.cursomc.services.exceptions.DataIntegrityException;
 import com.ggs.cursomc.services.exceptions.ObjectNotFoundException;
 
@@ -28,7 +30,7 @@ public class ResourceExceptionHandler {
 	}
 	
 	@ExceptionHandler(DataIntegrityException.class)
-	public ResponseEntity<StandardError> dataIntegrityException(DataIntegrityException e, HttpServletRequest request){
+	public ResponseEntity<StandardError> dataIntegrity(DataIntegrityException e, HttpServletRequest request){
 		StandardError err = new StandardError();
 		err.setStatus(NOT_FOUND.value());
 		err.setMsg(e.getMessage());
@@ -37,7 +39,7 @@ public class ResourceExceptionHandler {
 	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ValidationError> methodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request){
+	public ResponseEntity<ValidationError> methodArgumentNotValid(MethodArgumentNotValidException e, HttpServletRequest request){
 		ValidationError err = new ValidationError();
 		err.setStatus(NOT_FOUND.value());
 		err.setMsg("Erro de validação");
@@ -47,6 +49,15 @@ public class ResourceExceptionHandler {
 			err.addFields(error.getField(), error.getDefaultMessage());
 			
 		return status(NOT_FOUND).body(err);
+	}
+	
+	@ExceptionHandler(AuthorizationException.class)
+	public ResponseEntity<StandardError> authorization(AuthorizationException e, HttpServletRequest request){
+		StandardError err = new StandardError();
+		err.setStatus(FORBIDDEN.value());
+		err.setMsg(e.getMessage());
+		err.setTimestamp(currentTimeMillis());
+		return status(FORBIDDEN).body(err);
 	}
 
 }

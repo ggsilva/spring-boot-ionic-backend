@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -73,6 +74,19 @@ public class UserSS implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+	public boolean hasRole(Perfil perfil) {
+		return getAuthorities().stream().anyMatch(isPerfil(perfil));
+	}
+
+	private static Predicate<GrantedAuthority> isPerfil(Perfil perfil) {
+		return new Predicate<GrantedAuthority>() {
+			@Override
+			public boolean test(GrantedAuthority t) {
+				return perfil.getDescricao().equals(t.getAuthority());
+			}
+		};
 	}
 
 }
