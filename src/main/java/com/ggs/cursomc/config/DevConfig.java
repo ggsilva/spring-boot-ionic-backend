@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Profile;
 
 import com.ggs.cursomc.services.DBService;
 import com.ggs.cursomc.services.EmailService;
+import com.ggs.cursomc.services.MockEmailService;
 import com.ggs.cursomc.services.SmtpEmailService;
 
 @Configuration
@@ -29,7 +30,13 @@ public class DevConfig {
 	
 	@Bean
 	public EmailService emailService() {
+		if(isMock())
+			return new MockEmailService();
 		return new SmtpEmailService();
+	}
+
+	private boolean isMock() {
+		return true;
 	}
 
 }

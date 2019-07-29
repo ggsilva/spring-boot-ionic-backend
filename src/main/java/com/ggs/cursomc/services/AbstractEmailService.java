@@ -3,6 +3,7 @@ package com.ggs.cursomc.services;
 import static java.lang.String.format;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -15,6 +16,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.ggs.cursomc.domain.Cliente;
 import com.ggs.cursomc.domain.Pedido;
 
 public abstract class AbstractEmailService implements EmailService {
@@ -70,6 +72,22 @@ public abstract class AbstractEmailService implements EmailService {
 		Context context = new Context();
 		context.setVariable("pedido", p);
 		return templateEngine.process("email/confirmacaoPedido", context);
+	}
+	
+	@Override
+	public void sendNewPasswordEmail(Cliente cliente, String newPass) {
+		SimpleMailMessage sm = prepareNewPasswordEmail(cliente, newPass);
+		sendEmail(sm);
+	}
+
+	protected SimpleMailMessage prepareNewPasswordEmail(Cliente cliente, String newPass) {
+		SimpleMailMessage sm = new SimpleMailMessage();
+		sm.setTo(cliente.getEmail());
+		sm.setFrom(sender);
+		sm.setSubject("Solicitação de nova senha");
+		sm.setSentDate(new Date(System.currentTimeMillis()));
+		sm.setText("Nova senha: " + newPass);
+		return sm;
 	}
 
 }
