@@ -1,6 +1,5 @@
 package com.ggs.cursomc.services;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -48,20 +47,6 @@ public class S3Service {
 			return s3client.getUrl(bucketName, fileName).toURI();
 		} catch (URISyntaxException e) {
 			throw new FileException("Erro ao converter URL para URI");
-		}
-	}
-
-	public URI uploadFile(String fileName) {
-		try {
-			LOG.info("Iniciando upload");
-			File file = new File(fileName);
-			s3client.putObject(bucketName, "teste", file);
-			LOG.info("Upload finalizado");
-			return s3client.getUrl(bucketName, fileName).toURI();
-		} catch (URISyntaxException e) {
-			throw new FileException("Erro ao converter URL para URI");
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
 		}
 	}
 	

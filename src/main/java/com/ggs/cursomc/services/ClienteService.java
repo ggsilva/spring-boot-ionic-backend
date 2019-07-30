@@ -1,11 +1,13 @@
 package com.ggs.cursomc.services;
 
+import java.net.URI;
 import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ggs.cursomc.domain.Cidade;
 import com.ggs.cursomc.domain.Cliente;
@@ -21,6 +23,7 @@ import com.ggs.cursomc.services.exceptions.AuthorizationException;
 @Service
 public class ClienteService extends AppService<Cliente> {
 	
+	@Autowired S3Service s3Service;
 	@Autowired BCryptPasswordEncoder bc;
 
 	@Override
@@ -86,6 +89,10 @@ public class ClienteService extends AppService<Cliente> {
 		return userSS != null
 			&& userSS.hasRole(Perfil.ADMIN)
 			&& userSS.getId() == id;
+	}
+	
+	public URI uploadProfilePicture(MultipartFile multipartFile) {
+		return s3Service.uploadFile(multipartFile);
 	}
 
 }

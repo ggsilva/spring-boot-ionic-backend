@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ggs.cursomc.domain.Cliente;
 import com.ggs.cursomc.dto.ClienteDTO;
@@ -94,6 +95,12 @@ public class ClienteResource {
 
 	private static URI newUri(Cliente c) {
 		return fromCurrentRequest().path("/{id}").buildAndExpand(c.getId()).toUri();
+	}
+
+	@RequestMapping(method = POST, value = "/picture")
+	public ResponseEntity<Void> uploadProfilePicture(@RequestParam(name = "file") MultipartFile file) {
+		URI uri = service.uploadProfilePicture(file);
+		return created(uri).build();
 	}
 
 }
