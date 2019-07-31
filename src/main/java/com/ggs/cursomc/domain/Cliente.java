@@ -56,7 +56,9 @@ public class Cliente extends AppEntity {
 	@ElementCollection(fetch = EAGER)
 	@CollectionTable(name = "PERFIS")
 	private Set<Integer> perfis = newHashSet(CLIENTE.getCod());
-
+	
+	private String imageUrl;
+	
 	@Override
 	public Integer getId() {
 		return id;
@@ -129,6 +131,14 @@ public class Cliente extends AppEntity {
 
 	public void addPerfil(Perfil perfis) {
 		this.perfis.add(perfis.getCod());
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 }

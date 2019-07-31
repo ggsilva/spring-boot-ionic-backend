@@ -79,20 +79,48 @@ public class ClienteService extends AppService<Cliente> {
 	
 	@Override
 	public Cliente find(Integer id) {
-		if(isUserPermitido(id))
+		if(isFindOk(id))
 			return super.find(id);
 		throw new AuthorizationException("Acesso negado");
 	}
 
-	private boolean isUserPermitido(Integer id) {
-		UserSS userSS = UserService.authenticated();
-		return userSS != null
-			&& userSS.hasRole(Perfil.ADMIN)
-			&& userSS.getId() == id;
+	private static boolean isFindOk(Integer id) {
+		return isUserAuthenticated() && isUserPermited(id);
+	}
+
+	private static boolean isUserAuthenticated() {
+		return user() != null;
+	}
+	
+	private static UserSS user() {
+		return UserService.authenticated();
+	}
+
+	private static boolean isUserPermited(Integer id) {
+		return isSelf(id) || isUserAdmin();
+	}
+
+	private static boolean isSelf(Integer id) {
+		return user().getId() == id;
+	}
+
+	private static boolean isUserAdmin() {
+		return user().hasRole(Perfil.ADMIN);
 	}
 	
 	public URI uploadProfilePicture(MultipartFile multipartFile) {
-		return s3Service.uploadFile(multipartFile);
+		if(!isUserAuthenticated())
+			throw new AuthorizationException("Acesso negado");
+		
+		URI uri = s3Service.uploadFile(multipartFile);
+		updateCliente(uri);
+		return uri;
+	}
+
+	private void updateCliente(URI uri) {
+		Cliente cliente = DBRepository.findOne(Cliente.class, user().getId());
+		cliente.setImageUrl(uri.toString());
+		DBRepository.save(cliente);
 	}
 
 }
