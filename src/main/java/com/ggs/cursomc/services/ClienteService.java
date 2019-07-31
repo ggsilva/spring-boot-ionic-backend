@@ -1,9 +1,12 @@
 package com.ggs.cursomc.services;
 
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +28,10 @@ public class ClienteService extends AppService<Cliente> {
 	
 	@Autowired S3Service s3Service;
 	@Autowired BCryptPasswordEncoder bc;
+	@Autowired ImageService imageService;
+
+	@Value("${img.prefix.client.profile}")
+	private String prefix;
 
 	@Override
 	protected void updateData(Cliente oldObj, Cliente newObj) {
@@ -108,19 +115,23 @@ public class ClienteService extends AppService<Cliente> {
 		return user().hasRole(Perfil.ADMIN);
 	}
 	
-	public URI uploadProfilePicture(MultipartFile multipartFile) {
+	public URI uploadProfilePicture(MultipartFile file) {
 		if(!isUserAuthenticated())
 			throw new AuthorizationException("Acesso negado");
 		
-		URI uri = s3Service.uploadFile(multipartFile);
-		updateCliente(uri);
-		return uri;
+		return s3Service.uploadFile(jpgInputStream(jpgImage(file)), imageName(), "image");
 	}
 
-	private void updateCliente(URI uri) {
-		Cliente cliente = DBRepository.findOne(Cliente.class, user().getId());
-		cliente.setImageUrl(uri.toString());
-		DBRepository.save(cliente);
+	private BufferedImage jpgImage(MultipartFile multipartFile) {
+		return imageService.getJpgImageFromFile(multipartFile);
+	}
+
+	private InputStream jpgInputStream(BufferedImage jpgImage) {
+		return imageService.getInputStream(jpgImage, "jpg");
+	}
+
+	private String imageName() {
+		return prefix + user().getId() + ".jpg";
 	}
 
 }
