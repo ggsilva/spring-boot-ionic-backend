@@ -42,6 +42,11 @@ public class ClienteResource {
 	public ResponseEntity<?> find(@PathVariable Integer id) {
 		return ok(service.find(id));
 	}
+	
+	@RequestMapping(method = GET, value = "/email")
+	public ResponseEntity<?> find(@RequestParam(value = "value") String email) {
+		return ok(service.findByEmail(email));
+	}
 
 	@RequestMapping(method = PUT, value = "/{id}")
 	public ResponseEntity<Void> update(@Valid @RequestBody ClienteDTO c, @PathVariable Integer id) {

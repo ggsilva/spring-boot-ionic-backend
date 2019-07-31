@@ -1,5 +1,7 @@
 package com.ggs.cursomc.services;
 
+import static com.ggs.cursomc.repositories.DBRepository.repository;
+
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.net.URI;
@@ -19,6 +21,7 @@ import com.ggs.cursomc.domain.enums.Perfil;
 import com.ggs.cursomc.domain.enums.TipoCliente;
 import com.ggs.cursomc.dto.ClienteDTO;
 import com.ggs.cursomc.dto.ClienteNewDTO;
+import com.ggs.cursomc.repositories.ClienteRepository;
 import com.ggs.cursomc.repositories.DBRepository;
 import com.ggs.cursomc.security.UserSS;
 import com.ggs.cursomc.services.exceptions.AuthorizationException;
@@ -89,13 +92,17 @@ public class ClienteService extends AppService<Cliente> {
 	
 	@Override
 	public Cliente find(Integer id) {
-		if(isFindOk(id))
-			return super.find(id);
-		throw new AuthorizationException("Acesso negado");
+		verifyPermition(id);
+		return super.find(id);
 	}
 
-	private static boolean isFindOk(Integer id) {
-		return isUserAuthenticated() && isUserPermited(id);
+	private void verifyPermition(Integer id) {
+		if(!isAllowed(id))
+			throw new AuthorizationException("Acesso negado");
+	}
+
+	private static boolean isAllowed(Integer id) {
+		return isUserAuthenticated() && isUserAllowed(id);
 	}
 
 	private static boolean isUserAuthenticated() {
@@ -106,7 +113,7 @@ public class ClienteService extends AppService<Cliente> {
 		return UserService.authenticated();
 	}
 
-	private static boolean isUserPermited(Integer id) {
+	private static boolean isUserAllowed(Integer id) {
 		return isSelf(id) || isUserAdmin();
 	}
 
@@ -136,6 +143,28 @@ public class ClienteService extends AppService<Cliente> {
 
 	private String imageName() {
 		return prefix + user().getId() + ".jpg";
+	}
+
+	public Cliente findByEmail(String email) {
+		verifyPermition(email);
+		return repository(ClienteRepository.class).findByEmail(email);
+	}
+
+	private static void verifyPermition(String email) {
+		if(!isAllowed(email))
+			throw new AuthorizationException("Acesso negado");
+	}
+
+	private static boolean isAllowed(String email) {
+		return isUserAuthenticated() && isUserAllowed(email);
+	}
+
+	private static boolean isUserAllowed(String email) {
+		return isSelf(email) || isUserAdmin();
+	}
+
+	private static boolean isSelf(String email) {
+		return user().getUsername().equals(email);
 	}
 
 }
