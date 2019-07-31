@@ -33,6 +33,9 @@ public class ClienteService extends AppService<Cliente> {
 	@Value("${img.prefix.client.profile}")
 	private String prefix;
 
+	@Value("${img.profile.size}")
+	private Integer size;
+
 	@Override
 	protected void updateData(Cliente oldObj, Cliente newObj) {
 		oldObj.setNome(newObj.getNome());
@@ -123,7 +126,8 @@ public class ClienteService extends AppService<Cliente> {
 	}
 
 	private BufferedImage jpgImage(MultipartFile multipartFile) {
-		return imageService.getJpgImageFromFile(multipartFile);
+		BufferedImage img = imageService.cropSquare(imageService.getJpgImageFromFile(multipartFile));
+		return imageService.resize(img, size);
 	}
 
 	private InputStream jpgInputStream(BufferedImage jpgImage) {
