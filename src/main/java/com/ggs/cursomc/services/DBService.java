@@ -4,6 +4,7 @@ import static com.ggs.cursomc.domain.enums.EstadoPagamento.PENDENTE;
 import static com.ggs.cursomc.domain.enums.EstadoPagamento.QUITADO;
 import static com.ggs.cursomc.domain.enums.TipoCliente.PESSOA_FISICA;
 import static com.google.common.collect.Lists.newArrayList;
+import static java.lang.String.format;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -84,6 +85,19 @@ public class DBService {
 		
 		DBRepository.save(newArrayList(c1, c2, c3, c4, c5, c6, c7));
 		DBRepository.save(newArrayList(p01, p02, p03, p04, p05, p06, p07, p08, p09, p10, p11));
+		
+		adicionaProdutosAdicionais(c1);
+	}
+
+	private static void adicionaProdutosAdicionais(Categoria c1) {
+		for (int i = 12; i < 51; i++)
+			DBRepository.save(newProduto(format("Produto %d", i), 10.00, c1));
+	}
+
+	private static Produto newProduto(String nome, double preco, Categoria c) {
+		Produto p = newProduto(nome, preco);
+		p.getCategorias().add(c);
+		return p;
 	}
 
 	private static Produto newProduto(String nome, Double preco) {
